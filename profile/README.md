@@ -17,6 +17,14 @@
 
 ---
 
+## Repositories
+
+| Repo | What it is |
+|------|------------|
+| **[boogy-sdk](https://github.com/Boogy-ai/boogy-sdk)** | The SDK + `boogy` CLI — `Router`, typed handlers, `wit_glue!`, store helpers, `McpServer`. Full [architecture overview](https://github.com/Boogy-ai/boogy-sdk/blob/main/ARCHITECTURE.md) and [API reference](https://boogy-ai.github.io/boogy-sdk/). |
+| **[boogy-superpowers](https://github.com/Boogy-ai/boogy-superpowers)** | Agent skills that teach a coding agent to build Boogy services well. |
+| **[boogy-catalog](https://github.com/Boogy-ai/boogy-catalog)** | Provisionable, best-practice services — email, payments, governance — you deploy into your own tenant with your own keys. |
+
 ## How it fits together
 
 ```mermaid
@@ -46,14 +54,6 @@ You write handlers; the runtime gives each service a route subtree, an isolated
 **relational, ACID** store, a set of capabilities it must declare, and REST /
 JSON-RPC / MCP surfaces. Services call each other in-process — and a single
 transaction can span that whole call tree.
-
-## Repositories
-
-| Repo | What it is |
-|------|------------|
-| **[boogy-sdk](https://github.com/Boogy-ai/boogy-sdk)** | The SDK + `boogy` CLI — `Router`, typed handlers, `wit_glue!`, store helpers, `McpServer`. Full [architecture overview](https://github.com/Boogy-ai/boogy-sdk/blob/main/ARCHITECTURE.md) and [API reference](https://boogy-ai.github.io/boogy-sdk/). |
-| **[boogy-superpowers](https://github.com/Boogy-ai/boogy-superpowers)** | Agent skills that teach a coding agent to build Boogy services well. |
-| **[boogy-catalog](https://github.com/Boogy-ai/boogy-catalog)** | Provisionable, best-practice services — email, payments, governance — you deploy into your own tenant with your own keys. |
 
 ## Start here
 
