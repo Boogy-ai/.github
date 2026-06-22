@@ -58,8 +58,16 @@ transaction can span that whole call tree.
 ## Start here
 
 → **[Developer hub](https://boogy-ai.github.io/)** routes you to the docs, skills,
-and catalog. Building with an agent? `boogy skills install` vendors the skills
-into your project.
+and catalog.
+
+**Coding agents — zero install.** Connect to Boogy's public, anonymous MCP server
+at **`https://boogy.ai/mcp`** (e.g. `claude mcp add boogy https://boogy.ai/mcp`).
+It serves guidance (`get_started`, `get_skill`, `manifest_reference`), host-truth
+validation (`validate_manifest`, `check_service`), and device-flow sign-in
+(`login` shows the user a link to click; they sign in and the token returns to the
+agent — no CLI needed for auth). After `login`, deploy via the CLI (`boogy deploy`),
+the `/v1` REST API, or the authenticated admin MCP. Building in a repo you'll
+revisit? `boogy skills install` vendors the skills into your project.
 
 ---
 
