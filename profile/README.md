@@ -19,9 +19,34 @@
 
 ---
 
-## Start here
+## Start here — install the plugin
 
-**Coding agents — zero install.** Connect to Boogy's public, anonymous MCP server:
+You don't start by learning an SDK. Install the plugin and ask your agent for
+what you want; it carries the skills, the platform tools and the rules, and it
+does the building.
+
+```
+claude plugin marketplace add Boogy-ai/boogy-superpowers
+claude plugin install boogy-superpowers
+```
+
+Then, **inside Claude Code**:
+
+```
+/reload-plugins
+```
+
+**Do not skip that.** Nothing activates until it runs, and there is no error
+saying so — the session simply behaves as though the plugin were never
+installed.
+
+That's the setup. Now ask for what you want: *"build me a link shortener with a
+web page, and deploy it."*
+
+<details>
+<summary><b>Not on Claude Code?</b></summary>
+
+Point any MCP-capable agent at Boogy's public, anonymous MCP server:
 
 ```
 claude mcp add boogy https://api.boogy.ai/mcp
@@ -33,17 +58,11 @@ It serves guidance (`get_started`, `list_skills`, `get_skill`,
 click; they sign in and the token returns to the agent — no CLI needed for
 auth). Deploying needs the CLI (`boogy deploy`) or the `/v1` REST API.
 
-On **Claude Code**, prefer the plugin — one step that bundles the skills, wires
-that MCP, and adds the build gate:
+Or read **[boogy.ai/llms.txt](https://boogy.ai/llms.txt)** and follow it.
+Building in a repo you'll revisit without the plugin? `boogy skills install`
+vendors the skills into your project.
 
-```
-claude plugin marketplace add Boogy-ai/boogy-superpowers
-claude plugin install boogy-superpowers
-```
-
-Any other agent: read **[boogy.ai/llms.txt](https://boogy.ai/llms.txt)** and
-follow it. Building in a repo you'll revisit? `boogy skills install` vendors the
-skills into your project.
+</details>
 
 **Humans** — the [developer hub](https://boogy-ai.github.io/) routes you to the
 docs, the SDK, and the catalog.
