@@ -12,19 +12,58 @@
   ·
   <a href="https://boogy-ai.github.io/boogy-sdk/">API reference</a>
   ·
+  <a href="https://boogy.ai/llms.txt">Agent bootstrap</a>
+  ·
   <a href="https://boogy.ai">boogy.ai</a>
 </p>
 
 ---
 
-## Repositories
+## Start here
 
-| Repo | What it is |
-|------|------------|
-| **[boogy-sdk](https://github.com/Boogy-ai/boogy-sdk)** | The SDK + `boogy` CLI — `Router`, typed handlers, `wit_glue!`, store helpers, `McpServer`. Full [architecture overview](https://github.com/Boogy-ai/boogy-sdk/blob/main/ARCHITECTURE.md) and [API reference](https://boogy-ai.github.io/boogy-sdk/). |
-| **[boogy-web](https://github.com/Boogy-ai/boogy-web)** | The browser SDK (`@boogy/web`) — add user sign-in ("Sign in with Boogy") and authenticated requests to your app's frontend with one `fetch()`. |
-| **[boogy-superpowers](https://github.com/Boogy-ai/boogy-superpowers)** | Agent skills that teach a coding agent to build Boogy services well. |
-| **[boogy-catalog](https://github.com/Boogy-ai/boogy-catalog)** | Provisionable, best-practice services — email, payments, governance, multi-chain custodial wallets — you deploy into your own tenant with your own keys. |
+**Coding agents — zero install.** Connect to Boogy's public, anonymous MCP server:
+
+```
+claude mcp add boogy https://api.boogy.ai/mcp
+```
+
+It serves guidance (`get_started`, `list_skills`, `get_skill`,
+`manifest_reference`), host-truth validation (`validate_manifest`,
+`check_service`), and device-flow sign-in (`login` shows the user a link to
+click; they sign in and the token returns to the agent — no CLI needed for
+auth). Deploying needs the CLI (`boogy deploy`) or the `/v1` REST API.
+
+On **Claude Code**, prefer the plugin — one step that bundles the skills, wires
+that MCP, and adds the build gate:
+
+```
+claude plugin marketplace add Boogy-ai/boogy-superpowers
+claude plugin install boogy-superpowers
+```
+
+Any other agent: read **[boogy.ai/llms.txt](https://boogy.ai/llms.txt)** and
+follow it. Building in a repo you'll revisit? `boogy skills install` vendors the
+skills into your project.
+
+**Humans** — the [developer hub](https://boogy-ai.github.io/) routes you to the
+docs, the SDK, and the catalog.
+
+## What a service gets
+
+You write handlers. The runtime gives each deployed service:
+
+| | |
+|---|---|
+| **Surfaces** | REST, JSON-RPC, MCP tools, and protobuf RPC — Connect, gRPC-Web and native gRPC over one mount. `openapi.json` and `openrpc.json` are generated and served for you. |
+| **Data** | A private **relational, ACID** store. Declare models in Rust; indexes and columns reconcile on deploy. One transaction can span a whole cross-service call tree. |
+| **Frontend** | Ship TypeScript or JS **source** — the platform transpiles and serves it, no Node and no build step on your machine. Static site, full-stack, or backend-only. |
+| **Identity** | Platform accounts, "Sign in with Boogy" for your end users, per-service pairwise pseudonyms, API keys, scopes, and on-behalf-of delegation between services. |
+| **Security** | Capabilities are **deny-by-default** and declared in the manifest. Ingress mode, rate limits and CORS are host-enforced, not app code. |
+| **Money** | Charge per route execution against a prepaid ledger, and earn a share of the revenue an instance of your module generates. |
+| **The rest** | Background jobs, real-time channels over websockets, streaming responses, file storage, cryptographic signing, OAuth connections to third-party accounts, outbound HTTP behind an allowlist, and LLM completions across providers. |
+
+Services call each other **in-process** via `peer::fetch` — no network hop, and
+the caller's transaction and identity carry through.
 
 ## How it fits together
 
@@ -34,10 +73,12 @@ flowchart TB
 
   subgraph host["Boogy runtime"]
     direction TB
-    edge["HTTP edge<br/>auth · ingress · rate limit · CORS"]
+    edge["HTTP edge<br/>auth · ingress · rate limit · CORS · pricing"]
     sched["Fair scheduler<br/>per-owner budgets · backpressure"]
     inst["Your service<br/>Rust to wasm32-wasip2"]
+    fe["Static assets<br/>served by the host"]
     edge --> sched --> inst
+    edge --> fe
   end
 
   store[("Per-service<br/>transactional store")]
@@ -45,30 +86,21 @@ flowchart TB
   ext["Third-party APIs"]
 
   client -->|"request"| edge
-  inst -->|"REST · JSON-RPC · MCP"| client
+  inst -->|"REST · JSON-RPC · MCP · protobuf"| client
+  inst -->|"websockets · SSE"| client
   inst -->|"store"| store
   inst -->|"peer::fetch"| peer
-  inst -->|"outbound_http"| ext
+  inst -->|"outbound_http · OAuth connections"| ext
 ```
 
-You write handlers; the runtime gives each service a route subtree, an isolated
-**relational, ACID** store, a set of capabilities it must declare, and REST /
-JSON-RPC / MCP surfaces. Services call each other in-process — and a single
-transaction can span that whole call tree.
+## Repositories
 
-## Start here
-
-→ **[Developer hub](https://boogy-ai.github.io/)** routes you to the docs, skills,
-and catalog.
-
-**Coding agents — zero install.** Connect to Boogy's public, anonymous MCP server
-at **`https://boogy.ai/mcp`** (e.g. `claude mcp add boogy https://boogy.ai/mcp`).
-It serves guidance (`get_started`, `get_skill`, `manifest_reference`), host-truth
-validation (`validate_manifest`, `check_service`), and device-flow sign-in
-(`login` shows the user a link to click; they sign in and the token returns to the
-agent — no CLI needed for auth). After `login`, deploy via the CLI (`boogy deploy`),
-the `/v1` REST API, or the authenticated admin MCP. Building in a repo you'll
-revisit? `boogy skills install` vendors the skills into your project.
+| Repo | What it is |
+|------|------------|
+| **[boogy-sdk](https://github.com/Boogy-ai/boogy-sdk)** | The SDK + `boogy` CLI — `Router`, typed handlers, `wit_glue!`, store helpers, `McpServer`, the WIT interfaces. Full [architecture overview](https://github.com/Boogy-ai/boogy-sdk/blob/main/ARCHITECTURE.md) and [API reference](https://boogy-ai.github.io/boogy-sdk/). |
+| **[boogy-web](https://github.com/Boogy-ai/boogy-web)** | The browser SDK (`@boogy/web`) — add user sign-in ("Sign in with Boogy") and authenticated requests to your app's frontend with one `fetch()`. |
+| **[boogy-superpowers](https://github.com/Boogy-ai/boogy-superpowers)** | Agent skills that teach a coding agent to build Boogy services well — 40 of them, covering design, data modeling, auth, jobs, pricing, and the platform's limits. |
+| **[boogy-catalog](https://github.com/Boogy-ai/boogy-catalog)** | Provisionable, best-practice services — email, payments, multi-chain custodial wallets — you deploy into your own tenant with your own keys. |
 
 ---
 
